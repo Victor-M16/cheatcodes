@@ -15,13 +15,11 @@ from rest_framework.response import Response
 
 class PropertyViewSet(viewsets.ModelViewSet):
     serializer_class = PropertySerializer
-    queryset = Property.objects.all()
 
-    def list(self, request, *args, **kwargs):
-        # Filter properties based on the user's entity_id
-        properties = self.queryset.filter(entity_id=request.user.entity_id)
-        serializer = self.get_serializer(properties, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        # Dynamically filter the queryset based on the user's entity_id
+        return Property.objects.filter(entity_id=self.request.user.entity_id)
+    
 
     def create(self, request, *args, **kwargs):
         # Explicitly check for 'entity_id' in request data
